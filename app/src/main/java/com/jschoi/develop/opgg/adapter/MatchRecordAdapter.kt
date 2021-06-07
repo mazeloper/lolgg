@@ -4,9 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.jschoi.develop.opgg.Config.CHAMPION_INFO_URL
 import com.jschoi.develop.opgg.databinding.ItemMatchRecordBinding
 import com.jschoi.develop.opgg.dto.MatchDTO
-import com.jschoi.develop.opgg.util.LogUtil
+import com.jschoi.develop.opgg.view.activity.IntroActivity
 import com.jschoi.develop.opgg.view.activity.MainActivity
 import org.json.JSONObject
 
@@ -52,17 +53,12 @@ class MatchRecordAdapter(private val activity: MainActivity) :
             getCurrentWinOrLose(item)   // 승패확인
 
             val id = item.participants.get(searchUserIndex).championId.toString()
-            val dt = activity.championList[id] as JSONObject
-            val dt2 = dt["image"] as JSONObject
+            val championInfo = IntroActivity.championList[id] as JSONObject
+            val championImage = championInfo["image"] as JSONObject
 
-            LogUtil.warning(">>>>>>>>>>>>>>> ${dt["image"]}")
             Glide.with(activity.applicationContext)
-                .load("https://ddragon.leagueoflegends.com/cdn/10.6.1/img/champion/${dt2["full"]}")
+                .load("$CHAMPION_INFO_URL${championImage["sprite"]}")
                 .into(binding.championImageView)
-
-            // LogUtil.debug(" champion : ${item.participants.toString()}")
-            // LogUtil.error(">>>>> ### ${apiResponse}")
-
 
         }
 
