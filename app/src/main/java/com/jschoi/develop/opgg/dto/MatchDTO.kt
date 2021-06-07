@@ -13,5 +13,5 @@ data class MatchDTO(
     val gameVersion: String,
     val mapId: Int,
     val gameMode: String,
-    // val participants: List<ParticipantDto>
+    val participants: List<ParticipantDTO>
 )

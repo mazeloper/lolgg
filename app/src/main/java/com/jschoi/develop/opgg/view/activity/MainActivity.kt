@@ -1,6 +1,5 @@
 package com.jschoi.develop.opgg.view.activity
 
-import android.content.Context
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -19,22 +18,30 @@ import com.jschoi.develop.opgg.network.RetrofitClient
 import com.jschoi.develop.opgg.network.RetrofitService
 import com.jschoi.develop.opgg.util.LogUtil
 import com.jschoi.develop.opgg.util.Util
+import org.json.JSONException
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import java.io.*
+import java.net.URL
+import java.nio.charset.Charset
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
     // TODO 버전체크 추가 필요
     // https://ddragon.leagueoflegends.com/api/versions.json'
 
+    private lateinit var userName: String
     private lateinit var mainBinding: ActivityMainBinding
     private lateinit var retrofit: Retrofit
     private lateinit var riotApiService: RetrofitService
     private lateinit var encryptedAccountId: String
     private lateinit var matchRecordAdapter: MatchRecordAdapter
-    private lateinit var matchList: MutableList<MatchReferenceDTO>
+
+    var championList = mutableMapOf<String, JSONObject>()
+    private var matchList = arrayListOf<MatchDTO>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,13 +49,15 @@ class MainActivity : AppCompatActivity() {
         mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
 
+
         initRetrofit()
         initViews()
         initEventLisener()
+
     }
 
     private fun initViews() {
-        matchRecordAdapter = MatchRecordAdapter()
+        matchRecordAdapter = MatchRecordAdapter(this)
         mainBinding.matchListRecyclerView.layoutManager = LinearLayoutManager(this)
         mainBinding.matchListRecyclerView.adapter = matchRecordAdapter
     }
@@ -78,14 +87,56 @@ class MainActivity : AppCompatActivity() {
     private fun initRetrofit() {
         retrofit = RetrofitClient.getInstance()
         riotApiService = retrofit.create(RetrofitService::class.java)
+
+        Thread {
+            val json =
+                readJsonFromUrl("http://ddragon.leagueoflegends.com/cdn/11.11.1/data/en_US/champion.json")
+
+            val json2 = json.getJSONObject("data")
+            json2.keys().forEach {
+
+                val data = json2.getJSONObject(it)
+                val key = data.get("key").toString()
+                championList[key] = data
+            }
+            LogUtil.warning("${championList["41"]}")
+        }.start()
     }
+
+    @Throws(IOException::class, JSONException::class)
+    private fun readJsonFromUrl(url: String): JSONObject {
+        val str =
+            URL(url).openStream()
+        str.use { str ->
+            val rd = BufferedReader(
+                InputStreamReader(
+                    str,
+                    Charset.forName("UTF-8")
+                )
+            )
+            val jsonText = readAll(rd);
+            val json = JSONObject(jsonText);
+            return json
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun readAll(rd: Reader): String {
+        val sb = StringBuilder()
+        var cp: Int
+        while (rd.read().also { cp = it } != -1) {
+            sb.append(cp.toChar())
+        }
+        return sb.toString()
+    }
+
 
     /**
      * 키보드 내리기
      */
     private fun hideSoftKeyboard() {
         val inputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(mainBinding.userNameEditText.windowToken, 0)
     }
 
@@ -180,7 +231,8 @@ class MainActivity : AppCompatActivity() {
     private fun reqSearchSummoner() {
         showProgressBar(true)
 
-        val userName = mainBinding.userNameEditText.text.toString()
+        userName = mainBinding.userNameEditText.text.toString()
+
         riotApiService.reqSummonerId(userName, getString(R.string.riot_api_key))
             .enqueue(object : Callback<SummonerDTO> {
                 override fun onResponse(call: Call<SummonerDTO>, response: Response<SummonerDTO>) {
@@ -208,6 +260,10 @@ class MainActivity : AppCompatActivity() {
                     Util.showDialogMessage(this@MainActivity, t.toString())
                 }
             })
+    }
+
+    fun getSearchUserName(): String {
+        return userName.toLowerCase()
     }
 
     /**
@@ -247,18 +303,21 @@ class MainActivity : AppCompatActivity() {
                     call: Call<MatchListDTO>,
                     response: Response<MatchListDTO>
                 ) {
-                    showProgressBar(false)
 
-                    if (response.isSuccessful.not()) return
+                    if (response.isSuccessful.not() || response.body() == null) {
+                        showProgressBar(false)
+                        return
+                    }
 
                     response.body()?.let {
-                        matchList = it.matches.toMutableList()
-                        matchList.forEachIndexed { index, data ->
-                            if (index > 10) return@forEachIndexed
+                        // matchList = it.matches.toMutableList()
+                        it.matches.forEachIndexed { index, data ->
+                            // TODO 속도 이슈 생각
+                            //  if (index > 2) return@forEachIndexed
                             reqMatchDetailInfo(data.gameId.toString())
 
                         }
-                        matchRecordAdapter.replaceList(matchList)
+                        // matchRecordAdapter.replaceList(matchList)
 
                     }
                 }
@@ -274,10 +333,24 @@ class MainActivity : AppCompatActivity() {
         riotApiService.reqMatchDetailInfo(gameId, getString(R.string.riot_api_key))
             .enqueue(object : Callback<MatchDTO> {
                 override fun onResponse(call: Call<MatchDTO>, response: Response<MatchDTO>) {
+                    showProgressBar(false)
 
+                    if (response.isSuccessful.not()) return
+
+                    response.body()?.let {
+                        // val bc = it.toString().split(",")
+                        // bc.forEach { bc2 ->
+                        //     LogUtil.warning(">>>> data : ${bc2.toString()}")
+
+                        // }
+                        matchList.add(it)
+                        matchRecordAdapter.replaceList(matchList)
+                    }
                 }
 
                 override fun onFailure(call: Call<MatchDTO>, t: Throwable) {
+                    showProgressBar(false)
+                    Util.showDialogMessage(this@MainActivity, t.toString())
                 }
             })
     }

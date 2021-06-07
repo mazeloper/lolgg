@@ -6,6 +6,7 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
+        android:id="@+id/infoLinearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -31,6 +32,13 @@
             android:textStyle="bold"
             tools:text="솔로랭크" />
 
-
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/championImageView"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/infoLinearLayout" />
 </androidx.constraintlayout.widget.ConstraintLayout>
