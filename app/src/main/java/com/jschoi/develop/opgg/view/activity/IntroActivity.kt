@@ -4,7 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.jschoi.develop.opgg.Config.CHAMPION_LIST_URL
-import com.jschoi.develop.opgg.Config.SPELL_INFO_URL
+import com.jschoi.develop.opgg.Config.RUNE_LIST_URL
+import com.jschoi.develop.opgg.Config.SPELL_LIST_URL
 import com.jschoi.develop.opgg.databinding.ActivityIntroBinding
 import com.jschoi.develop.opgg.util.LogUtil
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,7 @@ class IntroActivity : AppCompatActivity() {
     companion object {
         val championList = mutableMapOf<String, JSONObject>()
         val spellList = mutableMapOf<String, JSONObject>()
+        val runesList = mutableMapOf<String, JSONObject>()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,13 +37,15 @@ class IntroActivity : AppCompatActivity() {
 
         // TODO 코루틴 공부할 것
         GlobalScope.launch(Dispatchers.IO) {
-            championInfoJsonParse()
-            spellInfoJsonParse()
+            championInfoJsonParse()     // 챔피언 리스트
+            spellInfoJsonParse()        // 스펠 리스트
+            runesReforgedJsonParse()    // 룬 리스트
 
             Thread.sleep(1000)
             startActivity(Intent(this@IntroActivity, MainActivity::class.java))
         }
     }
+
 
     private fun championInfoJsonParse() {
         val json = readJsonFromUrl(CHAMPION_LIST_URL)
@@ -56,7 +60,7 @@ class IntroActivity : AppCompatActivity() {
     }
 
     private fun spellInfoJsonParse() {
-        val json = readJsonFromUrl(SPELL_INFO_URL)
+        val json = readJsonFromUrl(SPELL_LIST_URL)
 
         val json2 = json.getJSONObject("data")
         json2.keys().forEach {
@@ -69,9 +73,21 @@ class IntroActivity : AppCompatActivity() {
         }
     }
 
+    private fun runesReforgedJsonParse() {
+        val json = readJsonFromUrl(RUNE_LIST_URL)
+
+        val json2 = json.getJSONObject("data")
+        json2.keys().forEach {
+
+            val data = json2.getJSONObject(it)
+            val key = data.get("key").toString()
+            runesList[key] = data
+        }
+    }
+
     @Throws(IOException::class, JSONException::class)
     private fun readJsonFromUrl(url: String): JSONObject {
-        val str =
+        var str =
             URL(url).openStream()
         str.use { str ->
             val rd = BufferedReader(
@@ -80,9 +96,16 @@ class IntroActivity : AppCompatActivity() {
                     Charset.forName("UTF-8")
                 )
             )
-            val jsonText = readAll(rd);
+            // TODO 여기서 부터
+            var jsonText = readAll(rd);
+//            if (url == RUNE_LIST_URL) {
+//                val json = JSONArray(jsonText);
+//                val jsob = json[0] as JSONObject
+//                return jsob
+//            } else {
             val json = JSONObject(jsonText);
             return json
+//            }
         }
     }
 
