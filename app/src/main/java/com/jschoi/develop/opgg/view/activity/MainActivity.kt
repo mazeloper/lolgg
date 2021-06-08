@@ -16,17 +16,12 @@ import com.jschoi.develop.opgg.dto.*
 import com.jschoi.develop.opgg.enum.Tier
 import com.jschoi.develop.opgg.network.RetrofitClient
 import com.jschoi.develop.opgg.network.RetrofitService
-import com.jschoi.develop.opgg.util.LogUtil
 import com.jschoi.develop.opgg.util.Util
-import org.json.JSONException
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import java.io.*
-import java.net.URL
-import java.nio.charset.Charset
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -78,6 +73,7 @@ class MainActivity : AppCompatActivity() {
 
             hideSoftKeyboard()
             if (mainBinding.userNameEditText.text.isNotEmpty()) {
+                matchList.clear()
                 reqSearchSummoner()
             }
         }
@@ -200,7 +196,6 @@ class MainActivity : AppCompatActivity() {
                         showProgressBar(false)
                         return
                     }
-                    // LogUtil.warning(">>>>>>>>>>${response.body()}")
                     // 유저 ID -> 리그 API 호출
                     response.body()?.let {
                         encryptedAccountId = it.accountId
@@ -269,15 +264,12 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     response.body()?.let {
-                        // matchList = it.matches.toMutableList()
                         it.matches.forEachIndexed { index, data ->
                             // TODO 속도 이슈 생각
-                            //  if (index > 2) return@forEachIndexed
+                            if (index > 20) return@forEachIndexed
                             reqMatchDetailInfo(data.gameId.toString())
 
                         }
-                        // matchRecordAdapter.replaceList(matchList)
-
                     }
                 }
 
@@ -297,11 +289,6 @@ class MainActivity : AppCompatActivity() {
                     if (response.isSuccessful.not()) return
 
                     response.body()?.let {
-                        // val bc = it.toString().split(",")
-                        // bc.forEach { bc2 ->
-                        //     LogUtil.warning(">>>> data : ${bc2.toString()}")
-
-                        // }
                         matchList.add(it)
                         matchRecordAdapter.replaceList(matchList)
                     }

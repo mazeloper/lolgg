@@ -3,7 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:background="#A8D9EF"
+    android:padding="8dp">
 
     <LinearLayout
         android:id="@+id/infoLinearLayout"
@@ -32,13 +35,74 @@
             android:textStyle="bold"
             tools:text="솔로랭크" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            tools:text="15:23" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            tools:text="1시간 전" />
+
     </LinearLayout>
+
+    <View
+        android:id="@+id/line_view"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:background="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/infoLinearLayout" />
 
     <ImageView
         android:id="@+id/championImageView"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/infoLinearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/line_view"
+        tools:background="@drawable/ic_launcher_background" />
+
+    <ImageView
+        android:id="@+id/firstSpellImageView"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="6dp"
+        app:layout_constraintStart_toEndOf="@id/championImageView"
+        app:layout_constraintTop_toTopOf="@id/championImageView"
+        tools:background="@drawable/ic_launcher_background" />
+
+    <ImageView
+        android:id="@+id/secondSpellImageView"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="6dp"
+        app:layout_constraintBottom_toBottomOf="@id/championImageView"
+        app:layout_constraintStart_toEndOf="@id/championImageView"
+        tools:background="@drawable/ic_launcher_background" />
+
+    <ImageView
+        android:id="@+id/firstRuneImageView"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="6dp"
+        android:background="@drawable/oval_transparent"
+        app:layout_constraintStart_toEndOf="@id/firstSpellImageView"
+        app:layout_constraintTop_toTopOf="@id/firstSpellImageView" />
+
+    <ImageView
+        android:id="@+id/secondRuneImageView"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="6dp"
+        android:background="@drawable/oval_transparent"
+        app:layout_constraintStart_toEndOf="@id/secondSpellImageView"
+        app:layout_constraintTop_toTopOf="@id/secondSpellImageView" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

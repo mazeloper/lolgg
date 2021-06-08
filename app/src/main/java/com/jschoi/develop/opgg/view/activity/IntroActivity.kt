@@ -4,7 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.jschoi.develop.opgg.Config.CHAMPION_LIST_URL
+import com.jschoi.develop.opgg.Config.SPELL_INFO_URL
 import com.jschoi.develop.opgg.databinding.ActivityIntroBinding
+import com.jschoi.develop.opgg.util.LogUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -23,6 +25,7 @@ class IntroActivity : AppCompatActivity() {
 
     companion object {
         val championList = mutableMapOf<String, JSONObject>()
+        val spellList = mutableMapOf<String, JSONObject>()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,20 +35,39 @@ class IntroActivity : AppCompatActivity() {
 
         // TODO 코루틴 공부할 것
         GlobalScope.launch(Dispatchers.IO) {
-            val json = readJsonFromUrl(CHAMPION_LIST_URL)
+            championInfoJsonParse()
+            spellInfoJsonParse()
 
-            val json2 = json.getJSONObject("data")
-            json2.keys().forEach {
-
-                val data = json2.getJSONObject(it)
-                val key = data.get("key").toString()
-                championList[key] = data
-            }
             Thread.sleep(1000)
             startActivity(Intent(this@IntroActivity, MainActivity::class.java))
         }
     }
 
+    private fun championInfoJsonParse() {
+        val json = readJsonFromUrl(CHAMPION_LIST_URL)
+
+        val json2 = json.getJSONObject("data")
+        json2.keys().forEach {
+
+            val data = json2.getJSONObject(it)
+            val key = data.get("key").toString()
+            championList[key] = data
+        }
+    }
+
+    private fun spellInfoJsonParse() {
+        val json = readJsonFromUrl(SPELL_INFO_URL)
+
+        val json2 = json.getJSONObject("data")
+        json2.keys().forEach {
+
+            val data = json2.getJSONObject(it)
+            val key = data.get("key").toString()
+            LogUtil.warning(">>>> key : ${key}, >>>>> data : ${data.toString()}")
+
+            spellList[key] = data
+        }
+    }
 
     @Throws(IOException::class, JSONException::class)
     private fun readJsonFromUrl(url: String): JSONObject {
