@@ -1,16 +1,20 @@
 package com.jschoi.develop.opgg
 
 object Config {
+    const val DATA_DRAGON_LIST_URL =
+        "https://ddragon.leagueoflegends.com/api/versions.json"
+    const val DATA_RUNES_IMAGE_URL =
+        "https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/"
     const val CHAMPION_LIST_URL =
-        "http://ddragon.leagueoflegends.com/cdn/11.11.1/data/en_US/champion.json"
+        "/data/ko_KR/champion.json"
     const val SPELL_LIST_URL =
-        "https://ddragon.leagueoflegends.com/cdn/10.6.1/data/en_US/summoner.json"
+        "/data/ko_KR/summoner.json"
     const val RUNE_LIST_URL =
-        "https://ddragon.leagueoflegends.com/cdn/10.6.1/data/en_US/runesReforged.json"
+        "/data/ko_KR/runesReforged.json"
     const val PROFILE_ICON_URL =
-        "http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"
+        "/img/profileicon/"
     const val CHAMPION_INFO_URL =
-        "https://ddragon.leagueoflegends.com/cdn/10.6.1/img/champion/"
+        "/img/champion/"
     const val SPELL_IMAGE_URL =
-        "https://ddragon.leagueoflegends.com/cdn/10.6.1/img/spell/"
+        "/img/spell/"
 }

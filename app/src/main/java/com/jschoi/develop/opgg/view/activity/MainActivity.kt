@@ -87,7 +87,8 @@ class MainActivity : BaseActivity(), MainContract.View {
     override fun userProfile(summonerData: SummonerDTO) {
         // 유저 프로필 아이콘
         summonerData.profileIconId.let { iconId ->
-            val profileIconImageUrl = "${PROFILE_ICON_URL}${iconId}.png"
+            val profileIconImageUrl =
+                "${IntroActivity.getCurrentVersionUrl()}${PROFILE_ICON_URL}${iconId}.png"
             setImageViewToGlide(mainBinding.userIconImageView, profileIconImageUrl)
         }
         mainBinding.userLevelTextView.text = summonerData.summonerLevel.toString()  // 레벨
