@@ -2,7 +2,6 @@ package com.jschoi.develop.opgg.presenter
 
 import android.content.Context
 import com.jschoi.develop.opgg.Config
-import com.jschoi.develop.opgg.Config.DATA_RUNES_IMAGE_URL
 import com.jschoi.develop.opgg.R
 import com.jschoi.develop.opgg.contract.MainContract
 import com.jschoi.develop.opgg.dto.*
@@ -47,6 +46,7 @@ class MainPresenter(private var view: MainContract.View, private var context: Co
                 override fun onResponse(call: Call<SummonerDTO>, response: Response<SummonerDTO>) {
 
                     if (response.isSuccessful.not()) {
+                        LogUtil.information(">>>>>>>>>>>>>>>>>> $response")
                         view.showProgressBar(false)
                         return
                     }
@@ -118,7 +118,7 @@ class MainPresenter(private var view: MainContract.View, private var context: Co
                     response.body()?.let {
                         it.matches.forEachIndexed { index, data ->
                             // TODO 속도 이슈 생각
-                            if (index > 0) return@forEachIndexed
+                            // if (index > 0) return@forEachIndexed
                             reqMatchDetailInfo(data.gameId.toString())
 
                         }
@@ -182,32 +182,34 @@ class MainPresenter(private var view: MainContract.View, private var context: Co
         // TODO 메인 룬 이미지
         // https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/<style_name>.png
         // https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/ Resolve/GraspOfTheUndying/GraspOfTheUndying.png
+
+
+        //https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/7200_Domination.png
+        //https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/perk-images/Styles/7203_Whimsy.png
         // 8437
-        val rune1Id = item.participants[searchUserIndex].stats.perkPrimaryStyle.toString()
-        val runes = IntroActivity.RUNES_LIST[rune1Id]?.getJSONObject(0)?.getJSONArray("runes")!!
-        val rune2Id = item.participants[searchUserIndex].stats.perkSubStyle.toString()
-        var run1Image: String?
-        for (idx in 0 until runes.length()) {
-            if (runes.getJSONObject(idx)["id"] == item.participants[searchUserIndex].stats.perk0) {
-                run1Image = runes.getJSONObject(idx)["icon"].toString()
-                rune1 = "${DATA_RUNES_IMAGE_URL}${run1Image}"
-                break
+        val rune1Id = item.participants[searchUserIndex].stats.perkPrimaryStyle
+        val runeMainId = item.participants[searchUserIndex].stats.perk0
+        val rune2Id = item.participants[searchUserIndex].stats.perkSubStyle
+        var runes1 = ""
+        IntroActivity.RUNES_DATA[rune1Id]?.slots?.first()?.runes?.forEach { rune ->
+            if (rune.id == runeMainId) {
+                runes1 = "https://ddragon.leagueoflegends.com/cdn/img/${rune.icon}"
             }
         }
-        // 룬 이미지2
-        IntroActivity.RUNES_SIMPLE_INFO.forEach {
+        val runes2 = IntroActivity.RUNES_DATA[rune2Id]?.icon?.let {
+            "https://ddragon.leagueoflegends.com/cdn/img/${it}"
+        } ?: ""
 
-            LogUtil.information("#################### ${it["id"]}")
-            LogUtil.information("##########rune2Id########## ${rune2Id}")
-            if (it["id"] == rune2Id) {
-                LogUtil.warning("####################")
-                rune2 = "${DATA_RUNES_IMAGE_URL}${it["icon"]}"
-                return@forEach
-            }
-        }
-
-        LogUtil.error(">>>>>>> MAIN : ${rune1}")
-        LogUtil.error(">>>>>>> SUB : ${rune2}")
-        view.replaceMatchRecordList(MatchRequiredDTO(win, championImageUrl, spell1, spell2))
+        view.replaceMatchRecordList(
+            MatchRequiredDTO(
+                item.gameCreation,
+                win,
+                championImageUrl,
+                spell1,
+                spell2,
+                runes1,
+                runes2
+            )
+        )
     }
 }

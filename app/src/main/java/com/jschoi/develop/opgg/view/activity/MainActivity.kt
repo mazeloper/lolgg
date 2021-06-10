@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.jschoi.develop.opgg.Config.PROFILE_ICON_URL
 import com.jschoi.develop.opgg.R
 import com.jschoi.develop.opgg.adapter.MatchRecordAdapter
+import com.jschoi.develop.opgg.adapter.SeasonRankInfoAdapter
 import com.jschoi.develop.opgg.contract.MainContract
 import com.jschoi.develop.opgg.databinding.ActivityMainBinding
 import com.jschoi.develop.opgg.dto.LeagueDTO
@@ -15,16 +16,14 @@ import com.jschoi.develop.opgg.dto.MatchRequiredDTO
 import com.jschoi.develop.opgg.dto.SummonerDTO
 import com.jschoi.develop.opgg.enum.Tier
 import com.jschoi.develop.opgg.presenter.MainPresenter
+import com.jschoi.develop.opgg.util.LogUtil
 
 class MainActivity : BaseActivity(), MainContract.View {
-
-    // TODO 버전체크 추가 필요
-    // https://ddragon.leagueoflegends.com/api/versions.json'
-
 
     private lateinit var presenter: MainContract.Presenter
     private lateinit var userName: String
     private lateinit var mainBinding: ActivityMainBinding
+    private lateinit var seasonRankInfoAdapter: SeasonRankInfoAdapter
     private lateinit var matchRecordAdapter: MatchRecordAdapter
 
     private var matchList = arrayListOf<MatchDTO>()
@@ -43,6 +42,14 @@ class MainActivity : BaseActivity(), MainContract.View {
     }
 
     override fun initViews() {
+        // 시즌정보 어뎁터
+        seasonRankInfoAdapter = SeasonRankInfoAdapter(this)
+        mainBinding.seasonRankInfoRecyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        mainBinding.seasonRankInfoRecyclerView.adapter = seasonRankInfoAdapter
+
+
+        // 전적 어뎁터
         matchRecordAdapter = MatchRecordAdapter(this)
         mainBinding.matchListRecyclerView.layoutManager = LinearLayoutManager(this)
         mainBinding.matchListRecyclerView.adapter = matchRecordAdapter
@@ -54,13 +61,13 @@ class MainActivity : BaseActivity(), MainContract.View {
             var handled = false
 
             if (action == EditorInfo.IME_ACTION_DONE) {
-                mainBinding.saerchButton.performClick()
+                mainBinding.searchButton.performClick()
                 handled = true
             }
             handled
         }
         // 검색 Button OnClick
-        mainBinding.saerchButton.setOnClickListener {
+        mainBinding.searchButton.setOnClickListener {
             it.hideSoftKeyboard() // 키보드 내리기
 
             if (mainBinding.userNameEditText.text.isNotEmpty()) {
@@ -77,7 +84,11 @@ class MainActivity : BaseActivity(), MainContract.View {
     }
 
     override fun replaceMatchRecordList(data: MatchRequiredDTO) {
+        LogUtil.warning(">>>>> data  : $data")
         matchRequiredList.add(data)
+        matchRequiredList.sortByDescending {
+            it.gameCreation
+        }
         matchRecordAdapter.replaceList(matchRequiredList)
     }
 

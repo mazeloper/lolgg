@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.jschoi.develop.opgg.databinding.ItemMatchRecordBinding
 import com.jschoi.develop.opgg.dto.MatchRequiredDTO
-import com.jschoi.develop.opgg.util.LogUtil
 import com.jschoi.develop.opgg.view.activity.MainActivity
 
 class MatchRecordAdapter(private val activity: MainActivity) :
@@ -51,8 +50,9 @@ class MatchRecordAdapter(private val activity: MainActivity) :
             // 스펠 이미지 2
             activity.setImageViewToGlide(binding.secondSpellImageView, item.spell2)
             // 룬 이미지 1
-            activity.setImageViewToGlide(binding.secondSpellImageView, item.spell2)
+            activity.setImageViewToGlide(binding.firstRuneImageView, item.runes1)
             // 룬 이미지 2
+            activity.setImageViewToGlide(binding.secondRuneImageView, item.runes2)
         }
     }
 }

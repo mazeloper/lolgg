@@ -91,18 +91,65 @@
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginStart="6dp"
-        android:background="@drawable/oval_transparent"
+        android:background="@drawable/oval_transparent_20"
         app:layout_constraintStart_toEndOf="@id/firstSpellImageView"
-        app:layout_constraintTop_toTopOf="@id/firstSpellImageView" />
+        app:layout_constraintTop_toTopOf="@id/firstSpellImageView"
+        tools:background="@drawable/ic_launcher_background" />
 
     <ImageView
         android:id="@+id/secondRuneImageView"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginStart="6dp"
-        android:background="@drawable/oval_transparent"
+        android:background="@drawable/oval_transparent_20"
         app:layout_constraintStart_toEndOf="@id/secondSpellImageView"
-        app:layout_constraintTop_toTopOf="@id/secondSpellImageView" />
+        app:layout_constraintTop_toTopOf="@id/secondSpellImageView"
+        tools:background="@drawable/ic_launcher_background" />
+
+    <TextView
+        android:id="@+id/killScoreTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/firstRuneImageView"
+        app:layout_constraintTop_toTopOf="@id/firstRuneImageView"
+        tools:text="7" />
+
+    <TextView
+        android:id="@+id/deathScoreTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/killScoreTextView"
+        app:layout_constraintTop_toTopOf="@id/firstRuneImageView"
+        tools:text="7" />
+
+    <TextView
+        android:id="@+id/assistantScoreTextView"
+        android:layout_marginStart="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/deathScoreTextView"
+        app:layout_constraintTop_toTopOf="@id/firstRuneImageView"
+        tools:text="7" />
+
+    <TextView
+        android:id="@+id/gradeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/assistantScoreTextView"
+        app:layout_constraintStart_toEndOf="@id/firstRuneImageView"
+        android:textAlignment="center"
+        android:layout_marginStart="8dp"
+        tools:text="2.46 평점" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

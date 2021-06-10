@@ -1,9 +1,6 @@
 package com.jschoi.develop.opgg.network
 
-import com.jschoi.develop.opgg.dto.LeagueDTO
-import com.jschoi.develop.opgg.dto.MatchDTO
-import com.jschoi.develop.opgg.dto.MatchListDTO
-import com.jschoi.develop.opgg.dto.SummonerDTO
+import com.jschoi.develop.opgg.dto.*
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -46,4 +43,10 @@ interface RetrofitService {
         @Path("matchId") matchId: String,
         @Query("api_key") api_key: String
     ): Call<MatchDTO>
+
+    /**
+     * 전적 리스트 API
+     */
+    @GET("data/ko_KR/runesReforged.json")
+    fun reqRunInfo(): Call<List<RuneDetailInfoDTO>>
 }

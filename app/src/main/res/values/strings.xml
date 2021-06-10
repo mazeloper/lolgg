@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">opgg</string>
-    <string name="riot_api_key">RGAPI-51ddbaf3-ba71-4b09-a875-38c33a7261f2</string>
+    <string name="riot_api_key">RGAPI-3a88eae0-eb09-4d01-a2b9-a4ddb81dc2ee</string>
+    <string name="match_record_renewal_text">전적갱신</string>
+    <string name="favorites_text">즐겨찾기</string>
 </resources>

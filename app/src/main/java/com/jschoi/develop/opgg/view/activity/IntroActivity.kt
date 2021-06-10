@@ -5,16 +5,21 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.jschoi.develop.opgg.Config.CHAMPION_LIST_URL
 import com.jschoi.develop.opgg.Config.DATA_DRAGON_LIST_URL
-import com.jschoi.develop.opgg.Config.RUNE_LIST_URL
 import com.jschoi.develop.opgg.Config.SPELL_LIST_URL
 import com.jschoi.develop.opgg.databinding.ActivityIntroBinding
-import com.jschoi.develop.opgg.util.LogUtil
+import com.jschoi.develop.opgg.dto.RuneDetailInfoDTO
+import com.jschoi.develop.opgg.network.RetrofitClient
+import com.jschoi.develop.opgg.network.RetrofitService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -22,7 +27,12 @@ import java.io.Reader
 import java.net.URL
 import java.nio.charset.Charset
 
+
 class IntroActivity : AppCompatActivity() {
+
+
+    private lateinit var retrofit: Retrofit
+    private lateinit var riotApiService: RetrofitService
 
     private lateinit var introBinding: ActivityIntroBinding
 
@@ -36,6 +46,9 @@ class IntroActivity : AppCompatActivity() {
         val SPELL_LIST = mutableMapOf<String, JSONObject>()
         val RUNES_LIST = mutableMapOf<String, JSONArray>()
         val RUNES_SIMPLE_INFO = mutableListOf<Map<String, String>>()
+
+        // TODO
+        val RUNES_DATA = mutableMapOf<Int, RuneDetailInfoDTO>()
 
         fun getCurrentVersionUrl() = DATA_DRAGON_URL
     }
@@ -58,13 +71,22 @@ class IntroActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Data Dragon Version Check
+     */
     private fun dataDragonVersionInfoJsonParse() {
         val json = readJsonArrayFromUrl(DATA_DRAGON_LIST_URL)
         version = json[0].toString()
 
         DATA_DRAGON_URL = baseUrl.plus(version)
+
+        retrofit = RetrofitClient.setIntroBaseURL("${DATA_DRAGON_URL}/").getInstance()
+        riotApiService = retrofit.create(RetrofitService::class.java)
     }
 
+    /**
+     * Champion Info List
+     */
     private fun championInfoJsonParse() {
         val json = readJsonFromUrl(DATA_DRAGON_URL.plus(CHAMPION_LIST_URL))
 
@@ -77,6 +99,9 @@ class IntroActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Spell Info List
+     */
     private fun spellInfoJsonParse() {
         val json = readJsonFromUrl(DATA_DRAGON_URL.plus(SPELL_LIST_URL))
 
@@ -90,22 +115,26 @@ class IntroActivity : AppCompatActivity() {
         }
     }
 
-    // TODO 룬이미지 JSON
+    /**
+     * Runes Info List
+     */
     private fun runesReforgedJsonParse() {
-        val json = readJsonArrayFromUrl(DATA_DRAGON_URL.plus(RUNE_LIST_URL))
-        for (i in 0 until json.length()) {
-            val json2 = json.getJSONObject(i)
-            json2.keys().forEach {
-                if (it != "slots") {
-                    simpleRunMap[it] = json2.getString(it)
+        riotApiService.reqRunInfo().enqueue(object : Callback<List<RuneDetailInfoDTO>> {
+            override fun onResponse(
+                call: Call<List<RuneDetailInfoDTO>>,
+                response: Response<List<RuneDetailInfoDTO>>
+            ) {
+                if (response.isSuccessful.not()) return
+                response.body()?.let {
+                    for (data in it) {
+                        RUNES_DATA[data.id] = data
+                    }
                 }
             }
-            val key = json2.get("id").toString()
-            val data = json2.getJSONArray("slots")
 
-            RUNES_LIST[key] = data
-        }
-        RUNES_SIMPLE_INFO
+            override fun onFailure(call: Call<List<RuneDetailInfoDTO>>, t: Throwable) {
+            }
+        })
     }
 
     @Throws(IOException::class, JSONException::class)

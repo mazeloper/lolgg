@@ -13,12 +13,12 @@
         android:imeOptions="actionDone"
         android:inputType="text"
         android:lines="1"
-        app:layout_constraintEnd_toStartOf="@+id/saerchButton"
+        app:layout_constraintEnd_toStartOf="@+id/searchButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/saerchButton"
+        android:id="@+id/searchButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="검색"
@@ -31,27 +31,52 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@android:color/holo_orange_dark"
+        android:paddingStart="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/userNameEditText">
 
-        <ImageView
-            android:id="@+id/userIconImageView"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/seasonRankInfoRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:background="@drawable/ic_launcher_background" />
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/userIconCardView"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/oval_transparent_80"
+            app:cardCornerRadius="80dp"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/seasonRankInfoRecyclerView">
+
+            <ImageView
+                android:id="@+id/userIconImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true" />
+        </androidx.cardview.widget.CardView>
+
 
         <TextView
             android:id="@+id/userLevelTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:layout_marginTop="60dp"
+            android:background="@drawable/shape_15_black"
             android:padding="4dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/userIconImageView"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="@id/userIconCardView"
+            app:layout_constraintStart_toStartOf="@id/userIconCardView"
+            app:layout_constraintTop_toTopOf="@id/userIconCardView"
             tools:text="120"
             tools:visibility="visible" />
 
@@ -60,11 +85,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/userIconImageView"
-            app:layout_constraintTop_toTopOf="parent"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintStart_toEndOf="@id/userIconCardView"
+            app:layout_constraintTop_toTopOf="@+id/userIconCardView"
             tools:text="Hide on bush" />
+
+        <Button
+            android:id="@+id/renewalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/match_record_renewal_text"
+            app:layout_constraintBottom_toBottomOf="@+id/userIconCardView"
+            app:layout_constraintStart_toEndOf="@id/userIconCardView" />
+
+        <Button
+            android:id="@+id/FavoritesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="@string/favorites_text"
+            app:layout_constraintBottom_toBottomOf="@+id/userIconCardView"
+            app:layout_constraintStart_toEndOf="@id/renewalButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
